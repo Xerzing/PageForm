@@ -2,54 +2,52 @@ function _(elem) {
     return document.getElementById(elem);
 }
 
-function uploadFile() {
-    var file = _("fileload").files[0];
-    if(!checkSize(file.size) || !checkType(file.type)){
-        return ;
-    };
-    var formdata = new FormData();
+$(document).ready(function () {
+    $("form").submit(function (event) {
+        event.preventDefault();
 
-    jQuery.each($('#fileload')[0].files, function(i, file) {
-        formdata.append('fileload', file);
-    });
+        var file = _("fileload").files[0];
 
-    $.ajax({
-        type: "POST",
-        url: "php/upload.php",
-        data: formdata,
-        processData: false,
-        contentType: false,
-        xhr: function() {
-            var ajax = new window.XMLHttpRequest();
-            ajax.upload.addEventListener("progress", progressHandler, false);
-            // ajax.addEventListener("load", completeHandler, false);
-            ajax.addEventListener("error", errorHandler, false);
-            ajax.addEventListener("abort", abortHandler, false);
-            return ajax;
-        },
-        success: function (data) {
-            _("progressBar").value = 100;
-            _("progressBar").style.width = "100%";
-            _("status").innerHTML = "Завершено";
-        },
-        always:function (data) {
-            result = JSON.parse(data);
-            _("status").innerHTML = result.text;
-        }
+        if(!checkSize(file.size) || !checkType(file.type)){
+            return ;
+        };
+        var formdata = new FormData(this);
+
+        jQuery.each($('#fileload')[0].files, function(i, file) {
+            formdata.append('fileload', file);
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "php/upload.php",
+            data: formdata,
+            processData: false,
+            contentType: false,
+            xhr: function() {
+                var ajax = new window.XMLHttpRequest();
+                ajax.upload.addEventListener("progress", progressHandler, false);
+                // ajax.addEventListener("load", completeHandler, false);
+                ajax.addEventListener("error", errorHandler, false);
+                ajax.addEventListener("abort", abortHandler, false);
+                return ajax;
+            },
+            success: function (data) {
+                result = JSON.parse(data);
+                _("status").innerHTML = result.text;
+                _("invalid-name").innerHTML = result.err_name;
+                _("invalid-email").innerHTML = result.err_email;
+                _("invalid-address").innerHTML = result.err_address;
+                _("invalid-postindex").innerHTML = result.err_index;
+            }
+        });
     });
-}
+});
 
 function progressHandler(event) {
     var percent = (event.loaded / event.total) * 100;
     _("progressBar").value = Math.round(percent);
     _("progressBar").style.width = Math.round(percent) + "%";
 }
-//
-// function completeHandler(event) {
-//     _("progressBar").value = 100;
-//     _("progressBar").style.width = "100%";
-//     _("status").innerHTML = "Завершено";
-// }
 
 function errorHandler(event) {
     _("status").innerHTML = "Помилка завантаження файлу";
@@ -82,20 +80,3 @@ function checkType(file_type) {
 }
 
 // FORM
-$(document).ready(function () {
-    $("form").submit(function (event) {
-        event.preventDefault();
-        var fullname = $("#fullname").val();
-        var email = $("#email").val();
-        var address = $("#address").val();
-        var postindex = $("#postindex").val();
-        var study = $("#study").val();
-        $("#form-result").load("php/form.php", {
-            fullname: fullname,
-            email: email,
-            address: address,
-            postindex: postindex,
-            study: study
-        });
-    });
-});

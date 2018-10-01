@@ -32,48 +32,51 @@ class Validation
     }
 
     public function validation(){
-        if ($_SERVER["REQUEST_METHOD"]) {
-            if(empty($_POST["fullname"])){
-                $this->fullnameErr = "Потрібно ввести ім'я";
-            } else {
-                $this->fullname = $this->testInput($_POST["fullname"]);
-                $this->fullnameErr = "";
-                if (!preg_match("/^[a-zA-Z ]*$/",$this->fullname)) {
-                    $this->fullnameErr = "Мають бути тільки букви та пробіли";
-                }
-            }
+        if (!$_SERVER["REQUEST_METHOD"]) {
+            return "ERROR";
+        }
 
-            if(empty($_POST["email"])){
-                $this->emailErr = "Потрібно ввести email";
-            } else {
-                $this->email = $this->testInput($_POST["email"]);
-                $this->emailErr = "";
-                if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-                    $this->emailErr = "Введений неправильний EMail";
-                }
-            }
-
-            if(empty($_POST["address"])){
-                $this->addressErr = "Потрібно ввести адресу";
-            } else {
-                $this->address = $this->testInput($_POST["address"]);
-                $this->addressErr = "";
-            }
-
-            if(empty($_POST["postindex"])){
-                $this->postIndexErr = "Потрібно ввести поштовий індекс";
-            } else {
-                $this->postIndex = $_POST["postindex"];
-                $this->postIndexErr = "";
-            }
-
-            if(empty($_POST["study"])){
-                $this->study = "";
-            } else {
-                $this->study = $this->testInput($_POST["study"]);
+        if(empty($_POST["fullname"])){
+            $this->fullnameErr = "Потрібно ввести ім'я";
+        } else {
+            $this->fullname = $this->testInput($_POST["fullname"]);
+            $this->fullnameErr = "";
+            if (!preg_match("/^[a-zA-Z ]*$/",$this->fullname)) {
+                $this->fullnameErr = "Мають бути тільки букви та пробіли";
             }
         }
+
+        if(empty($_POST["email"])){
+            $this->emailErr = "Потрібно ввести email";
+        } else {
+            $this->email = $this->testInput($_POST["email"]);
+            $this->emailErr = "";
+            if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                $this->emailErr = "Введений неправильний EMail";
+            }
+        }
+
+        if(empty($_POST["address"])){
+            $this->addressErr = "Потрібно ввести адресу";
+        } else {
+            $this->address = $this->testInput($_POST["address"]);
+            $this->addressErr = "";
+        }
+
+        if(empty($_POST["postindex"])){
+            $this->postIndexErr = "Потрібно ввести поштовий індекс";
+        } else {
+            $this->postIndex = $_POST["postindex"];
+            $this->postIndexErr = "";
+        }
+
+        if(empty($_POST["study"])){
+            $this->study = "";
+        } else {
+            $this->study = $this->testInput($_POST["study"]);
+        }
     }
+
 
     // Getting a values in case of valid input
     public function getName()
@@ -133,13 +136,3 @@ class Validation
 
 $checkValid = new Validation();
 $checkValid->validation();
-
-?>
-
-<script>
-    document.getElementById('invalid-name').innerHTML = "<?php echo $checkValid->getNameError(); ?>";
-    document.getElementById('invalid-email').innerHTML = "<?php echo $checkValid->getEmailError(); ?>";
-    document.getElementById('invalid-address').innerHTML = "<?php echo $checkValid->getAddressError(); ?>";
-    document.getElementById('invalid-postindex').innerHTML = "<?php echo $checkValid->getPostIndexError(); ?>";
-    document.getElementById('form-message').innerHTML = "<?php echo $checkValid->getMessage(); ?>";
-</script>
